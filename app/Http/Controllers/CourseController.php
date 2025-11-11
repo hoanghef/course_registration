@@ -13,7 +13,8 @@ class CourseController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Course::with(['subject', 'teacher.user', 'schedules']);
+        $query = Course::with(['subject', 'teacher.user', 'schedules'])
+            ->withCount(['registrations as approved_students_count' => function($q) { $q->where('status', 'approved'); }]);
 
         // Filter by semester
         if ($request->has('semester')) {
@@ -61,8 +62,9 @@ class CourseController extends Controller
     public function availableCourses(Request $request)
     {
         $query = Course::with(['subject', 'teacher.user', 'schedules'])
+            ->withCount(['registrations as approved_students_count' => function($q) { $q->where('status', 'approved'); }])
             ->where('status', 'open')
-            ->where('current_students', '<', DB::raw('max_students'));
+            ->whereRaw('approved_students_count < max_students');
 
         // Filter by semester
         if ($request->has('semester')) {

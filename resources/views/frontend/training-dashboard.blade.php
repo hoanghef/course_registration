@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Phong Dao Tao</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f7fa; }
+        
+        .navbar {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-left h1 { font-size: 24px; }
+        
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .btn-create {
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .btn-create:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        
+        .btn-logout {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-logout:hover {
+            background: white;
+            color: #f5576c;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #f5576c;
+        }
+        
+        .stat-card h3 {
+            font-size: 36px;
+            color: #f5576c;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e1e8ed;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #f5576c;
+            border-bottom-color: #f5576c;
+            font-weight: 600;
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .subject-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .subject-card {
+            background: white;
+            border: 2px solid #e1e8ed;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .subject-card:hover {
+            border-color: #f5576c;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .subject-code {
+            background: #f5576c;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .subject-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .subject-info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e1e8ed;
+        }
+        
+        th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #f5576c;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-left">
+            <h1>🏢 Phong Dao Tao</h1>
+        </div>
+        <div class="navbar-right">
+            <a href="create-subject.html" class="btn-create">➕ Tao mon hoc moi</a>
+            <span id="userName" style="font-weight: 600;"></span>
+            <button class="btn-logout" onclick="logout()">Dang xuat</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="totalSubjects">0</h3>
+                <p>Tong so mon hoc</p>
+            </div>
+            <div class="stat-card" style="border-left-color: #4facfe;">
+                <h3 id="totalCourses" style="color: #4facfe;">0</h3>
+                <p>Tong so lop hoc</p>
+            </div>
+            <div class="stat-card" style="border-left-color: #43e97b;">
+                <h3 id="totalRegistrations" style="color: #43e97b;">0</h3>
+                <p>Tong dang ky hoc ky nay</p>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('subjects')">Quan ly mon hoc</button>
+            <button class="tab" onclick="showTab('courses')">Danh sach lop hoc</button>
+            <button class="tab" onclick="showTab('registrations')">Danh sach dang ky</button>
+        </div>
+
+        <div id="subjects" class="tab-content active">
+            <div class="card">
+                <h2>📚 Danh sach mon hoc</h2>
+                <div id="subjectsList" class="subject-grid">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p style="margin-top: 10px; color: #666;">Dang tai...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="courses" class="tab-content">
+            <div class="card">
+                <h2>🏫 Danh sach lop hoc</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ma lop</th>
+                            <th>Ten mon</th>
+                            <th>Giang vien</th>
+                            <th>Hoc ky</th>
+                            <th>Si so</th>
+                            <th>Phong</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coursesTable">
+                        <tr>
+                            <td colspan="6">
+                                <div class="loading">
+                                    <div class="spinner"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="registrations" class="tab-content">
+            <div class="card">
+                <h2>📋 Danh sach dang ky hoc ky nay</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ma SV</th>
+                            <th>Ho ten</th>
+                            <th>Mon hoc</th>
+                            <th>Lop</th>
+                            <th>Ngay dang ky</th>
+                            <th>Trang thai</th>
+                        </tr>
+                    </thead>
+                    <tbody id="registrationsTable">
+                        <tr>
+                            <td colspan="6">
+                                <div class="loading">
+                                    <div class="spinner"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = window.location.origin + '/api';
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (!token || !user || user.role !== 'phong_dao_tao') {
+            window.location.href = 'index.html';
+        }
+
+        document.getElementById('userName').textContent = user.full_name;
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'courses') loadCourses();
+            if (tabName === 'registrations') loadRegistrations();
+        }
+
+        async function loadSubjects() {
+            try {
+                const response = await fetch(`${API_URL}/dao-tao/subjects`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                const div = document.getElementById('subjectsList');
+
+                if (data.data && data.data.length > 0) {
+                    div.innerHTML = data.data.map(subject => `
+                        <div class="subject-card">
+                            <span class="subject-code">${subject.subject_code}</span>
+                            <div class="subject-title">${subject.subject_name}</div>
+                            <div class="subject-info"><strong>Tin chi:</strong> ${subject.credits}</div>
+                            <div class="subject-info"><strong>So lop:</strong> ${subject.courses ? subject.courses.length : 0}</div>
+                            <div class="subject-info"><strong>Ly thuyet:</strong> ${subject.theory_hours}h | <strong>Thuc hanh:</strong> ${subject.practice_hours}h</div>
+                        </div>
+                    `).join('');
+
+                    document.getElementById('totalSubjects').textContent = data.data.length;
+                } else {
+                    div.innerHTML = '<p style="text-align:center;padding:40px;">Chua co mon hoc nao</p>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function loadCourses() {
+            try {
+                const response = await fetch(`${API_URL}/courses`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                const tbody = document.getElementById('coursesTable');
+
+                if (data.data && data.data.length > 0) {
+                    tbody.innerHTML = data.data.map(course => `
+                        <tr>
+                            <td><strong>${course.course_code}</strong></td>
+                            <td>${course.subject.subject_name}</td>
+                            <td>${course.teacher?.user?.full_name || 'Chua phan cong'}</td>
+                            <td>${course.semester} - ${course.academic_year}</td>
+                            <td>${course.current_students}/${course.max_students}</td>
+                            <td>${course.room}</td>
+                        </tr>
+                    `).join('');
+
+                    document.getElementById('totalCourses').textContent = data.data.length;
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Chua co lop hoc</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function loadRegistrations() {
+            try {
+                const response = await fetch(`${API_URL}/dao-tao/registrations`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const data = await response.json();
+                const tbody = document.getElementById('registrationsTable');
+
+                if (data.data && data.data.length > 0) {
+                    tbody.innerHTML = data.data.map(reg => `
+                        <tr>
+                            <td><strong>${reg.student.student_code}</strong></td>
+                            <td>${reg.student.user.full_name}</td>
+                            <td>${reg.course.subject.subject_name}</td>
+                            <td>${reg.course.course_code}</td>
+                            <td>${new Date(reg.registration_date).toLocaleDateString('vi-VN')}</td>
+                            <td><span style="color: #28a745; font-weight: 600;">Thanh cong</span></td>
+                        </tr>
+                    `).join('');
+
+                    document.getElementById('totalRegistrations').textContent = data.data.length;
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Chua co dang ky nao</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        loadSubjects();
+    </script>
+</body>
+</html>

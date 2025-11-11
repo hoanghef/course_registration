@@ -50,4 +50,25 @@ class Course extends Model
     {
         return $this->hasMany(CourseSchedule::class);
     }
+
+    /**
+     * Accessor to return current students count.
+     * Prefer an eager-loaded approved_students_count (from withCount) if available
+     * to avoid stale stored value or N+1 queries. Falls back to stored attribute.
+     */
+    public function getCurrentStudentsAttribute($value)
+    {
+        // If withCount('registrations as approved_students_count') was used
+        if (array_key_exists('approved_students_count', $this->attributes)) {
+            return (int) $this->attributes['approved_students_count'];
+        }
+
+        // If relation loaded with that alias
+        if ($this->relationLoaded('registrations')) {
+            return $this->registrations->where('status', 'approved')->count();
+        }
+
+        // Fallback to the raw value stored in DB
+        return (int) $value;
+    }
 }

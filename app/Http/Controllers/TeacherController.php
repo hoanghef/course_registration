@@ -17,6 +17,7 @@ class TeacherController extends Controller
         $teacher = $user->teacher;
 
         $query = Course::with(['subject', 'schedules'])
+            ->withCount(['registrations as approved_students_count' => function($q) { $q->where('status', 'approved'); }])
             ->where('teacher_id', $teacher->id);
 
         // Filter by semester
@@ -24,7 +25,7 @@ class TeacherController extends Controller
             $query->where('semester', $request->semester);
         }
 
-        $courses = $query->get();
+    $courses = $query->get();
 
         return response()->json($courses);
     }
@@ -89,6 +90,7 @@ class TeacherController extends Controller
         $teacher = $user->teacher;
 
         $courses = Course::with(['subject', 'schedules'])
+            ->withCount(['registrations as approved_students_count' => function($q) { $q->where('status', 'approved'); }])
             ->where('teacher_id', $teacher->id)
             ->whereIn('status', ['open', 'closed'])
             ->get();
