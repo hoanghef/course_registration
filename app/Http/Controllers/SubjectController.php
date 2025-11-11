@@ -88,7 +88,8 @@ class SubjectController extends Controller
             $courses = [];
 
             for ($i = 1; $i <= $numberOfClasses; $i++) {
-                $classNumber = str_pad($i, 2, '0', STR_PAD_LEFT);
+                // Use simple numeric suffix to match seeded format (e.g. SUBJ.1, SUBJ.2)
+                $classNumber = $i;
                 
                 // Lấy phòng và giảng viên (nếu có)
                 $room = $rooms[$i - 1] ?? "A" . (100 + $i);
@@ -96,7 +97,7 @@ class SubjectController extends Controller
 
                 // Tạo lớp
                 $course = Course::create([
-                    'course_code' => $request->subject_code . ".N" . $classNumber,
+                    'course_code' => $request->subject_code . "." . $classNumber,
                     'subject_id' => $subject->id,
                     'teacher_id' => $teacherId,
                     'semester' => $request->semester,
@@ -220,12 +221,13 @@ class SubjectController extends Controller
             $teachers = $request->teachers ?? [];
 
             for ($i = 1; $i <= $numberOfClasses; $i++) {
-                $classNumber = str_pad($existingCount + $i, 2, '0', STR_PAD_LEFT);
+                // Continue numbering without padding so format matches seeded courses (e.g. SUBJ.3)
+                $classNumber = $existingCount + $i;
                 $room = $rooms[$i - 1] ?? "A" . (100 + $existingCount + $i);
                 $teacherId = $teachers[$i - 1] ?? null;
 
                 $course = Course::create([
-                    'course_code' => $subject->subject_code . ".N" . $classNumber,
+                    'course_code' => $subject->subject_code . "." . $classNumber,
                     'subject_id' => $subject->id,
                     'teacher_id' => $teacherId,
                     'semester' => $request->semester,

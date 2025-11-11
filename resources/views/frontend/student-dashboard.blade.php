@@ -323,7 +323,7 @@
 <body>
     <div class="navbar">
         <div class="navbar-left">
-            <h1>🎓 Dashboard Sinh vien</h1>
+            <h1>🎓 Dashboard Sinh viên</h1>
         </div>
         <div class="navbar-right">
             <div class="user-info">
@@ -333,7 +333,7 @@
                     <div id="userEmail" style="font-size: 12px; opacity: 0.9;"></div>
                 </div>
             </div>
-            <button class="btn-logout" onclick="logout()">Dang xuat</button>
+            <button class="btn-logout" onclick="logout()">Đăng xuất</button>
         </div>
     </div>
 
@@ -341,19 +341,19 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <h3 id="totalRegistered">0</h3>
-                <p>Mon da dang ky</p>
+                <p>Môn đã đăng ký</p>
             </div>
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="showTab('available')">Dang ky mon hoc</button>
-            <button class="tab" onclick="showTab('registered')">Mon da dang ky</button>
-            <button class="tab" onclick="showTab('schedule')">Lich hoc</button>
+            <button class="tab active" onclick="showTab('available')">Đăng ký môn học</button>
+            <button class="tab" onclick="showTab('registered')">Môn đã đăng ký</button>
+            <button class="tab" onclick="showTab('schedule')">Lịch học</button>
         </div>
 
         <div id="available" class="tab-content active">
             <div class="card">
-                <h2>📚 Danh sach mon hoc co the dang ky</h2>
+                <h2>📚 Danh sách môn học có thể đăng ký</h2>
                 <div id="availableCourses" class="course-grid">
                     <div class="loading"><div class="spinner"></div></div>
                 </div>
@@ -362,14 +362,14 @@
 
         <div id="registered" class="tab-content">
             <div class="card">
-                <h2>📝 Mon hoc da dang ky</h2>
+                <h2>📝 Môn học đã đăng ký</h2>
                 <div id="registeredCourses" class="course-grid"></div>
             </div>
         </div>
 
         <div id="schedule" class="tab-content">
             <div class="card">
-                <h2>📅 Lich hoc tuan nay</h2>
+                <h2>📅 Lịch học tuần này</h2>
                 <div id="calendarContainer">
                     <div class="loading"><div class="spinner"></div></div>
                 </div>
@@ -421,17 +421,17 @@
                                 <span style="color: #666; font-size: 12px;">${course.current_students}/${course.max_students}</span>
                             </div>
                             <div class="course-title">${course.subject.subject_name}</div>
-                            <div class="course-info"><strong>Tin chi:</strong> ${course.subject.credits}</div>
-                            <div class="course-info"><strong>Giang vien:</strong> ${course.teacher?.user?.full_name || 'Chua PC'}</div>
-                            <div class="course-info"><strong>Phong:</strong> ${course.room}</div>
+                            <div class="course-info"><strong>Tín chỉ:</strong> ${course.subject.credits}</div>
+                            <div class="course-info"><strong>Giảng viên:</strong> ${course.teacher?.user?.full_name || 'Chưa PC'}</div>
+                            <div class="course-info"><strong>Phòng:</strong> ${course.room}</div>
                             ${formatSchedulesHTML(course.schedules, course.room)}
                             <button class="btn-register" onclick="registerCourse(${course.id})" ${course.current_students >= course.max_students ? 'disabled' : ''}>
-                                ${course.current_students >= course.max_students ? 'Da day' : 'Dang ky'}
+                                ${course.current_students >= course.max_students ? 'Đã đủ' : 'Đăng ký'}
                             </button>
                         </div>
                     `).join('');
                 } else {
-                    coursesDiv.innerHTML = '<p style="text-align:center;color:#666;">Khong co mon hoc</p>';
+                    coursesDiv.innerHTML = '<p style="text-align:center;color:#666;">Không có môn học</p>';
                 }
             } catch (error) {
                 console.error(error);

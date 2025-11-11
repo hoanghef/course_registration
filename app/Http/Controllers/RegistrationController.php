@@ -38,9 +38,10 @@ class RegistrationController extends Controller
             return response()->json(['error' => 'Lớp học đã đầy'], 400);
         }
 
-        // Kiểm tra đã đăng ký chưa
+        // Kiểm tra đã đăng ký chưa (chỉ kiểm tra đăng ký còn hiệu lực, không tính cái bị hủy)
         $existingRegistration = Registration::where('student_id', $student->id)
             ->where('course_id', $course->id)
+            ->whereIn('status', ['pending', 'approved'])
             ->first();
 
         if ($existingRegistration) {
@@ -49,14 +50,30 @@ class RegistrationController extends Controller
 
         DB::beginTransaction();
         try {
-            // Tạo đăng ký - TỰ ĐỘNG DUYỆT
-            $registration = Registration::create([
-                'student_id' => $student->id,
-                'course_id' => $course->id,
-                'status' => 'approved', // ← THAY ĐỔI Ở ĐÂY
-                'approved_by' => 1, // Auto approved by system
-                'approved_at' => now(),
-            ]);
+            // Kiểm tra xem có đăng ký bị hủy trước đó không
+            $cancelledRegistration = Registration::where('student_id', $student->id)
+                ->where('course_id', $course->id)
+                ->where('status', 'cancelled')
+                ->first();
+
+            if ($cancelledRegistration) {
+                // Nếu có, update status thành 'approved' thay vì insert mới
+                $registration = $cancelledRegistration;
+                $registration->update([
+                    'status' => 'approved',
+                    'approved_by' => 1,
+                    'approved_at' => now(),
+                ]);
+            } else {
+                // Nếu không có, tạo đăng ký mới
+                $registration = Registration::create([
+                    'student_id' => $student->id,
+                    'course_id' => $course->id,
+                    'status' => 'approved',
+                    'approved_by' => 1,
+                    'approved_at' => now(),
+                ]);
+            }
 
             // Tăng số lượng sinh viên hiện tại
             $course->increment('current_students');
@@ -108,8 +125,9 @@ class RegistrationController extends Controller
 
         DB::beginTransaction();
         try {
+            // Chỉ update status thành cancelled, không decrement current_students
+            // vì sinh viên có thể đăng ký lại sau (update record này)
             $registration->update(['status' => 'cancelled']);
-            $registration->course->decrement('current_students');
 
             DB::commit();
 
@@ -132,7 +150,8 @@ class RegistrationController extends Controller
             return response()->json(['error' => 'Không có quyền truy cập'], 403);
         }
 
-        $query = Registration::with(['student.user', 'course.subject', 'course.teacher.user']);
+        $query = Registration::with(['student.user', 'course.subject', 'course.teacher.user'])
+            ->where('status', '!=', 'cancelled'); // Mặc định loại bỏ đăng ký bị hủy
 
         // Lọc theo học kỳ
         if ($request->has('semester')) {
@@ -141,7 +160,7 @@ class RegistrationController extends Controller
             });
         }
 
-        // Lọc theo trạng thái
+        // Lọc theo trạng thái (cho phép override filter mặc định)
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }

@@ -264,6 +264,7 @@
         <div id="courses" class="tab-content">
             <div class="card">
                 <h2>🏫 Danh sach lop hoc</h2>
+                <!-- debug output removed -->
                 <table>
                     <thead>
                         <tr>
@@ -317,7 +318,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:8000/api';
+        const API_URL = window.location.origin + '/api';
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user'));
 
@@ -326,6 +327,12 @@
         }
 
         document.getElementById('userName').textContent = user.full_name;
+
+        function showErrorIn(container, message) {
+            const el = typeof container === 'string' ? document.getElementById(container) : container;
+            if (!el) return;
+            el.innerHTML = `<p style="text-align:center;color:#666;padding:24px;">${message}</p>`;
+        }
 
         function logout() {
             localStorage.clear();
@@ -349,11 +356,22 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
+                if (!response.ok) {
+                    let errMsg = `Lỗi: ${response.status}`;
+                    try { const err = await response.json(); errMsg = err.message || JSON.stringify(err); } catch (e) { errMsg = response.statusText || errMsg; }
+                    const div = document.getElementById('subjectsList');
+                    showErrorIn(div, `Không thể tải: ${errMsg}`);
+                    return;
+                }
+
                 const data = await response.json();
                 const div = document.getElementById('subjectsList');
 
-                if (data.data && data.data.length > 0) {
-                    div.innerHTML = data.data.map(subject => `
+                // Normalize response
+                const subjects = data.data || (Array.isArray(data) ? data : []);
+
+                if (subjects && subjects.length > 0) {
+                    div.innerHTML = subjects.map(subject => `
                         <div class="subject-card">
                             <span class="subject-code">${subject.subject_code}</span>
                             <div class="subject-title">${subject.subject_name}</div>
@@ -363,12 +381,14 @@
                         </div>
                     `).join('');
 
-                    document.getElementById('totalSubjects').textContent = data.data.length;
+                    document.getElementById('totalSubjects').textContent = subjects.length;
                 } else {
-                    div.innerHTML = '<p style="text-align:center;padding:40px;">Chua co mon hoc nao</p>';
+                    showErrorIn(div, 'Chưa có môn học nào');
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('loadSubjects error', error);
+                const div = document.getElementById('subjectsList');
+                showErrorIn(div, 'Không thể kết nối với API');
             }
         }
 
@@ -378,27 +398,41 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
+                if (!response.ok) {
+                    let errMsg = `Lỗi: ${response.status}`;
+                    try { const err = await response.json(); errMsg = err.message || JSON.stringify(err); } catch (e) { errMsg = response.statusText || errMsg; }
+                    const tbody = document.getElementById('coursesTable');
+                    tbody.innerHTML = `<tr><td colspan="6"><p style="text-align:center;color:#666;padding:24px;">Không thể tải: ${errMsg}</p></td></tr>`;
+                    return;
+                }
+
                 const data = await response.json();
                 const tbody = document.getElementById('coursesTable');
 
-                if (data.data && data.data.length > 0) {
-                    tbody.innerHTML = data.data.map(course => `
+                // Normalize response (may be {data: [...]} or paginated)
+                const courses = data.data || (Array.isArray(data) ? data : []);
+
+                if (courses && courses.length > 0) {
+                    tbody.innerHTML = courses.map(course => `
                         <tr>
                             <td><strong>${course.course_code}</strong></td>
-                            <td>${course.subject.subject_name}</td>
-                            <td>${course.teacher?.user?.full_name || 'Chua phan cong'}</td>
+                            <td>${course.subject?.subject_name || ''}</td>
+                            <td>${course.teacher?.user?.full_name || 'Chưa phân công'}</td>
                             <td>${course.semester} - ${course.academic_year}</td>
                             <td>${course.current_students}/${course.max_students}</td>
                             <td>${course.room}</td>
                         </tr>
                     `).join('');
 
-                    document.getElementById('totalCourses').textContent = data.data.length;
+                    // If paginated response provides total, show that (total across pages). Fallback to current page length.
+                    document.getElementById('totalCourses').textContent = (data.total !== undefined) ? data.total : courses.length;
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Chua co lop hoc</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Chưa có lớp học</td></tr>';
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('loadCourses error', error);
+                const tbody = document.getElementById('coursesTable');
+                tbody.innerHTML = '<tr><td colspan="6"><p style="text-align:center;color:#666;padding:24px;">Không thể kết nối với API</p></td></tr>';
             }
         }
 
@@ -408,27 +442,40 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
 
+                if (!response.ok) {
+                    let errMsg = `Lỗi: ${response.status}`;
+                    try { const err = await response.json(); errMsg = err.message || JSON.stringify(err); } catch (e) { errMsg = response.statusText || errMsg; }
+                    const tbody = document.getElementById('registrationsTable');
+                    tbody.innerHTML = `<tr><td colspan="6"><p style="text-align:center;color:#666;padding:24px;">Không thể tải: ${errMsg}</p></td></tr>`;
+                    return;
+                }
+
                 const data = await response.json();
                 const tbody = document.getElementById('registrationsTable');
 
-                if (data.data && data.data.length > 0) {
-                    tbody.innerHTML = data.data.map(reg => `
+                // Normalize response (paginated)
+                const regs = data.data || (Array.isArray(data) ? data : []);
+
+                if (regs && regs.length > 0) {
+                    tbody.innerHTML = regs.map(reg => `
                         <tr>
                             <td><strong>${reg.student.student_code}</strong></td>
                             <td>${reg.student.user.full_name}</td>
-                            <td>${reg.course.subject.subject_name}</td>
+                            <td>${reg.course.subject?.subject_name || ''}</td>
                             <td>${reg.course.course_code}</td>
                             <td>${new Date(reg.registration_date).toLocaleDateString('vi-VN')}</td>
                             <td><span style="color: #28a745; font-weight: 600;">Thanh cong</span></td>
                         </tr>
                     `).join('');
 
-                    document.getElementById('totalRegistrations').textContent = data.data.length;
+                    document.getElementById('totalRegistrations').textContent = regs.length;
                 } else {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Chua co dang ky nao</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;">Chưa có đăng ký nào</td></tr>';
                 }
             } catch (error) {
-                console.error('Error:', error);
+                console.error('loadRegistrations error', error);
+                const tbody = document.getElementById('registrationsTable');
+                tbody.innerHTML = '<tr><td colspan="6"><p style="text-align:center;color:#666;padding:24px;">Không thể kết nối với API</p></td></tr>';
             }
         }
 

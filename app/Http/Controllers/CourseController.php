@@ -14,7 +14,8 @@ class CourseController extends Controller
     public function index(Request $request)
     {
         $query = Course::with(['subject', 'teacher.user', 'schedules'])
-            ->withCount(['registrations as approved_students_count' => function($q) { $q->where('status', 'approved'); }]);
+            // Order newest first so recently created classes appear on page 1
+            ->orderBy('created_at', 'desc');
 
         // Filter by semester
         if ($request->has('semester')) {
@@ -61,10 +62,10 @@ class CourseController extends Controller
      */
     public function availableCourses(Request $request)
     {
-        $query = Course::with(['subject', 'teacher.user', 'schedules'])
-            ->withCount(['registrations as approved_students_count' => function($q) { $q->where('status', 'approved'); }])
-            ->where('status', 'open')
-            ->whereRaw('approved_students_count < max_students');
+        $query = Course::with(['subject', 'teacher.user', 'schedules', 'registrations' => function($q) {
+            $q->where('status', 'approved');
+        }])
+            ->where('status', 'open');
 
         // Filter by semester
         if ($request->has('semester')) {
@@ -80,8 +81,26 @@ class CourseController extends Controller
             });
         }
 
-        $courses = $query->paginate(20);
+        // Get all matching courses (without pagination first)
+        $allCourses = $query->get();
 
-        return response()->json($courses);
+        // Filter app-side: only courses with available spots
+        $filteredCourses = $allCourses->filter(function($course) {
+            $approvedCount = $course->registrations->count();
+            return $approvedCount < $course->max_students;
+        })->values();
+
+        // Manually paginate the filtered results
+        $page = $request->get('page', 1);
+        $perPage = 20;
+        $paginatedCourses = $filteredCourses->slice(($page - 1) * $perPage, $perPage)->values();
+
+        return response()->json([
+            'data' => $paginatedCourses,
+            'current_page' => $page,
+            'per_page' => $perPage,
+            'total' => $filteredCourses->count(),
+            'last_page' => ceil($filteredCourses->count() / $perPage),
+        ]);
     }
 }
