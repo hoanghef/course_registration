@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Phong Dao Tao</title>
+    <title>Dashboard - Phòng Đào Tạo</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f7fa; }
@@ -218,12 +218,12 @@
 <body>
     <div class="navbar">
         <div class="navbar-left">
-            <h1>🏢 Phong Dao Tao</h1>
+            <h1>🏢 Phòng Đào Tạo</h1>
         </div>
         <div class="navbar-right">
-            <a href="create-subject.html" class="btn-create">➕ Tao mon hoc moi</a>
+            <a href="create-subject.html" class="btn-create">➕ Tạo môn học mới</a>
             <span id="userName" style="font-weight: 600;"></span>
-            <button class="btn-logout" onclick="logout()">Dang xuat</button>
+            <button class="btn-logout" onclick="logout()">Đăng xuất</button>
         </div>
     </div>
 
@@ -231,31 +231,31 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <h3 id="totalSubjects">0</h3>
-                <p>Tong so mon hoc</p>
+                <p>Tổng số môn học</p>
             </div>
             <div class="stat-card" style="border-left-color: #4facfe;">
                 <h3 id="totalCourses" style="color: #4facfe;">0</h3>
-                <p>Tong so lop hoc</p>
+                <p>Tổng số lớp học</p>
             </div>
             <div class="stat-card" style="border-left-color: #43e97b;">
                 <h3 id="totalRegistrations" style="color: #43e97b;">0</h3>
-                <p>Tong dang ky hoc ky nay</p>
+                <p>Tổng đăng ký học kỳ này</p>
             </div>
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="showTab('subjects')">Quan ly mon hoc</button>
-            <button class="tab" onclick="showTab('courses')">Danh sach lop hoc</button>
-            <button class="tab" onclick="showTab('registrations')">Danh sach dang ky</button>
+            <button class="tab active" onclick="showTab('subjects')">Quản lý môn học</button>
+            <button class="tab" onclick="showTab('courses')">Danh sách lớp học</button>
+            <button class="tab" onclick="showTab('registrations')">Danh sách đăng ký</button>
         </div>
 
         <div id="subjects" class="tab-content active">
             <div class="card">
-                <h2>📚 Danh sach mon hoc</h2>
+                <h2>📚 Danh sách môn học</h2>
                 <div id="subjectsList" class="subject-grid">
                     <div class="loading">
                         <div class="spinner"></div>
-                        <p style="margin-top: 10px; color: #666;">Dang tai...</p>
+                        <p style="margin-top: 10px; color: #666;">Đang tải...</p>
                     </div>
                 </div>
             </div>
@@ -263,17 +263,17 @@
 
         <div id="courses" class="tab-content">
             <div class="card">
-                <h2>🏫 Danh sach lop hoc</h2>
+                <h2>🏫 Danh sách lớp học</h2>
                 <!-- debug output removed -->
                 <table>
                     <thead>
                         <tr>
-                            <th>Ma lop</th>
-                            <th>Ten mon</th>
-                            <th>Giang vien</th>
-                            <th>Hoc ky</th>
-                            <th>Si so</th>
-                            <th>Phong</th>
+                            <th>Mã lớp</th>
+                            <th>Tên môn</th>
+                            <th>Giảng viên</th>
+                            <th>Học kỳ</th>
+                            <th>Sĩ số</th>
+                            <th>Phòng</th>
                         </tr>
                     </thead>
                     <tbody id="coursesTable">
@@ -291,16 +291,16 @@
 
         <div id="registrations" class="tab-content">
             <div class="card">
-                <h2>📋 Danh sach dang ky hoc ky nay</h2>
+                <h2>📋 Danh sách đăng ký học kỳ này</h2>
                 <table>
                     <thead>
                         <tr>
-                            <th>Ma SV</th>
-                            <th>Ho ten</th>
-                            <th>Mon hoc</th>
-                            <th>Lop</th>
-                            <th>Ngay dang ky</th>
-                            <th>Trang thai</th>
+                            <th>Mã SV</th>
+                            <th>Họ tên</th>
+                            <th>Môn học</th>
+                            <th>Lớp</th>
+                            <th>Ngày đăng ký</th>
+                            <th>Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody id="registrationsTable">
@@ -375,9 +375,9 @@
                         <div class="subject-card">
                             <span class="subject-code">${subject.subject_code}</span>
                             <div class="subject-title">${subject.subject_name}</div>
-                            <div class="subject-info"><strong>Tin chi:</strong> ${subject.credits}</div>
-                            <div class="subject-info"><strong>So lop:</strong> ${subject.courses ? subject.courses.length : 0}</div>
-                            <div class="subject-info"><strong>Ly thuyet:</strong> ${subject.theory_hours}h | <strong>Thuc hanh:</strong> ${subject.practice_hours}h</div>
+                            <div class="subject-info"><strong>Tín chỉ:</strong> ${subject.credits}</div>
+                            <div class="subject-info"><strong>Số lớp:</strong> ${subject.courses ? subject.courses.length : 0}</div>
+                            <div class="subject-info"><strong>Lý thuyết:</strong> ${subject.theory_hours}h | <strong>Thực hành:</strong> ${subject.practice_hours}h</div>
                         </div>
                     `).join('');
 
@@ -464,7 +464,7 @@
                             <td>${reg.course.subject?.subject_name || ''}</td>
                             <td>${reg.course.course_code}</td>
                             <td>${new Date(reg.registration_date).toLocaleDateString('vi-VN')}</td>
-                            <td><span style="color: #28a745; font-weight: 600;">Thanh cong</span></td>
+                            <td><span style="color: #28a745; font-weight: 600;">Thành công</span></td>
                         </tr>
                     `).join('');
 

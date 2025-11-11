@@ -7,6 +7,7 @@ use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class RegistrationController extends Controller
 {
@@ -46,6 +47,39 @@ class RegistrationController extends Controller
 
         if ($existingRegistration) {
             return response()->json(['error' => 'Bạn đã đăng ký môn học này'], 400);
+        }
+
+        // Kiểm tra xung đột lịch với các lớp đang đăng ký (pending/approved)
+        $selectedSchedules = $course->schedules()->get();
+        if ($selectedSchedules && $selectedSchedules->count() > 0) {
+            $studentRegs = Registration::with('course.schedules', 'course')->where('student_id', $student->id)
+                ->whereIn('status', ['pending', 'approved'])
+                ->get();
+
+            foreach ($studentRegs as $reg) {
+                $otherCourse = $reg->course;
+                $otherSchedules = $otherCourse->schedules ?? collect();
+
+                foreach ($selectedSchedules as $s1) {
+                    foreach ($otherSchedules as $s2) {
+                        // same day?
+                        if ((int)$s1->day_of_week !== (int)$s2->day_of_week) continue;
+
+                        // both must have start/end
+                        if (!$s1->start_time || !$s1->end_time || !$s2->start_time || !$s2->end_time) continue;
+
+                        $s1Start = Carbon::parse($s1->start_time);
+                        $s1End = Carbon::parse($s1->end_time);
+                        $s2Start = Carbon::parse($s2->start_time);
+                        $s2End = Carbon::parse($s2->end_time);
+
+                        // overlap if start < other end AND other start < end
+                        if ($s1Start->lt($s2End) && $s2Start->lt($s1End)) {
+                            return response()->json(['error' => 'Xung đột lịch với lớp đã đăng ký: ' . ($otherCourse->course_code ?? 'Unknown')], 400);
+                        }
+                    }
+                }
+            }
         }
 
         DB::beginTransaction();

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Sinh vien</title>
+    <title>Dashboard - Sinh viên</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f7fa; }
@@ -324,7 +324,7 @@
 <body>
     <div class="navbar">
         <div class="navbar-left">
-            <h1>🎓 Dashboard Sinh vien</h1>
+            <h1>🎓 Dashboard Sinh viên</h1>
         </div>
         <div class="navbar-right">
             <div class="user-info">
@@ -334,7 +334,7 @@
                     <div id="userEmail" style="font-size: 12px; opacity: 0.9;"></div>
                 </div>
             </div>
-            <button class="btn-logout" onclick="logout()">Dang xuat</button>
+            <button class="btn-logout" onclick="logout()">Đăng xuất</button>
         </div>
     </div>
 
@@ -342,19 +342,19 @@
         <div class="stats-grid">
             <div class="stat-card">
                 <h3 id="totalRegistered">0</h3>
-                <p>Mon da dang ky</p>
+                <p>Môn đã đăng ký</p>
             </div>
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="showTab('available')">Dang ky mon hoc</button>
-            <button class="tab" onclick="showTab('registered')">Mon da dang ky</button>
-            <button class="tab" onclick="showTab('schedule')">Lich hoc</button>
+            <button class="tab active" onclick="showTab('available')">Đăng ký môn học</button>
+            <button class="tab" onclick="showTab('registered')">Môn đã đăng ký</button>
+            <button class="tab" onclick="showTab('schedule')">Lịch học</button>
         </div>
 
         <div id="available" class="tab-content active">
             <div class="card">
-                <h2>📚 Danh sach mon hoc co the dang ky</h2>
+                <h2>📚 Danh sách môn học có thể đăng ký</h2>
                 <div id="availableCourses" class="course-grid">
                     <div class="loading"><div class="spinner"></div></div>
                 </div>
@@ -363,14 +363,14 @@
 
         <div id="registered" class="tab-content">
             <div class="card">
-                <h2>📝 Mon hoc da dang ky</h2>
+                <h2>📝 Môn học đã đăng ký</h2>
                 <div id="registeredCourses" class="course-grid"></div>
             </div>
         </div>
 
         <div id="schedule" class="tab-content">
             <div class="card">
-                <h2>📅 Lich hoc tuan nay</h2>
+                <h2>📅 Lịch học tuần này</h2>
                 <div id="calendarContainer">
                     <div class="loading"><div class="spinner"></div></div>
                 </div>
@@ -438,17 +438,17 @@
                                 <span style="color: #666; font-size: 12px;">${course.current_students}/${course.max_students}</span>
                             </div>
                             <div class="course-title">${course.subject?.subject_name || ''}</div>
-                            <div class="course-info"><strong>Tin chi:</strong> ${course.subject?.credits || ''}</div>
-                            <div class="course-info"><strong>Giang vien:</strong> ${course.teacher?.user?.full_name || 'Chua PC'}</div>
-                            <div class="course-info"><strong>Phong:</strong> ${course.room || ''}</div>
+                            <div class="course-info"><strong>Tín chỉ:</strong> ${course.subject?.credits || ''}</div>
+                            <div class="course-info"><strong>Giảng viên:</strong> ${course.teacher?.user?.full_name || 'Chưa PC'}</div>
+                            <div class="course-info"><strong>Phòng:</strong> ${course.room || ''}</div>
                             ${formatSchedulesHTML(course.schedules, course.room)}
                             <button class="btn-register" onclick="registerCourse(${course.id})" ${course.current_students >= course.max_students ? 'disabled' : ''}>
-                                ${course.current_students >= course.max_students ? 'Da day' : 'Dang ky'}
+                                ${course.current_students >= course.max_students ? 'Đã đủ' : 'Đăng ký'}
                             </button>
                         </div>
                     `).join('');
                 } else {
-                    showErrorIn(coursesDiv, 'Khong co mon hoc');
+                    showErrorIn(coursesDiv, 'Không có môn học');
                 }
             } catch (error) {
                 console.error('loadAvailableCourses error', error);
@@ -457,7 +457,7 @@
         }
 
         async function registerCourse(courseId) {
-            if (!confirm('Dang ky mon hoc nay?')) return;
+            if (!confirm('Đăng ký môn học này?')) return;
 
             try {
                 const response = await fetch(`${API_URL}/sinh-vien/registrations`, {
@@ -471,15 +471,15 @@
 
                 const data = await response.json().catch(()=>({}));
                 if (response.ok) {
-                    alert('Dang ky thanh cong!');
+                    alert('Đăng ký thành công!');
                     loadAvailableCourses();
                     loadStats();
                 } else {
-                    alert(data.message || data.error || 'That bai');
+                    alert(data.message || data.error || 'Thất bại');
                 }
             } catch (error) {
                 console.error('registerCourse error', error);
-                alert('Loi ket noi. Vui long thu lai.');
+                alert('Lỗi kết nối. Vui lòng thử lại.');
             }
         }
 
@@ -509,18 +509,18 @@
                         <div class="course-card">
                             <div class="course-header">
                                 <span class="course-code">${reg.course.course_code}</span>
-                                <span class="status-badge">Thanh cong</span>
+                                <span class="status-badge">Thành công</span>
                             </div>
                             <div class="course-title">${reg.course.subject?.subject_name || ''}</div>
-                            <div class="course-info"><strong>Tin chi:</strong> ${reg.course.subject?.credits || ''}</div>
-                            <div class="course-info"><strong>Phong:</strong> ${reg.course.room || ''}</div>
+                            <div class="course-info"><strong>Tín chỉ:</strong> ${reg.course.subject?.credits || ''}</div>
+                            <div class="course-info"><strong>Phòng:</strong> ${reg.course.room || ''}</div>
                             ${formatSchedulesHTML(reg.course.schedules, reg.course.room)}
-                            <div class="course-info"><strong>Ngay DK:</strong> ${new Date(reg.registration_date).toLocaleDateString('vi-VN')}</div>
-                            <button class="btn-cancel" onclick="cancelRegistration(${reg.id})">Huy dang ky</button>
+                            <div class="course-info"><strong>Ngày ĐK:</strong> ${new Date(reg.registration_date).toLocaleDateString('vi-VN')}</div>
+                            <button class="btn-cancel" onclick="cancelRegistration(${reg.id})">Hủy đăng ký</button>
                         </div>
                     `).join('');
                 } else {
-                    showErrorIn(coursesDiv, 'Chua dang ky mon nao');
+                    showErrorIn(coursesDiv, 'Chưa đăng ký môn nào');
                 }
 
                 loadStats();
@@ -531,7 +531,7 @@
         }
 
         async function cancelRegistration(regId) {
-            if (!confirm('Huy dang ky mon nay?')) return;
+            if (!confirm('Hủy đăng ký môn này?')) return;
 
             try {
                 const response = await fetch(`${API_URL}/sinh-vien/registrations/${regId}`, {
@@ -540,14 +540,14 @@
                 });
 
                 if (response.ok) {
-                    alert('Da huy thanh cong!');
+                    alert('Đã hủy thành công!');
                     loadRegisteredCourses();
                     loadAvailableCourses();
                 } else {
-                    alert('Huy that bai');
+                    alert('Hủy thất bại');
                 }
             } catch (error) {
-                alert('Loi ket noi');
+                alert('Lỗi kết nối');
             }
         }
 
@@ -570,7 +570,7 @@
                 const normalized = Array.isArray(scheduleData) ? scheduleData : (scheduleData.data || []);
 
                 if (!normalized || normalized.length === 0) {
-                    container.innerHTML = '<p style="text-align:center;padding:40px;">Chua co lich hoc</p>';
+                    container.innerHTML = '<p style="text-align:center;padding:40px;">Chưa có lịch học</p>';
                     return;
                 }
 
@@ -583,12 +583,12 @@
 
         function renderCalendar(scheduleData) {
             const timeSlots = ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
-            const dayNames = ['Thu 2', 'Thu 3', 'Thu 4', 'Thu 5', 'Thu 6', 'Thu 7', 'CN'];
+            const dayNames = ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'];
             
             const container = document.getElementById('calendarContainer');
             
             let html = '<div class="calendar-grid">';
-            html += '<div class="calendar-header-cell">Gio</div>';
+            html += '<div class="calendar-header-cell">Giờ</div>';
             dayNames.forEach(day => {
                 html += `<div class="calendar-header-cell">${day}</div>`;
             });

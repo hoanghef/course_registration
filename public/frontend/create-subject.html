@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tao mon hoc moi</title>
+    <title>Tạo môn học mới</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -92,7 +92,7 @@
     <div class="container">
         <a href="training-dashboard.html" class="btn-back">← Quay lai</a>
         
-        <h1>Tao mon hoc moi</h1>
+        <h1>Tạo môn học mới</h1>
         
         <div class="error" id="error"></div>
         <div class="success" id="success"></div>
@@ -100,109 +100,109 @@
         <form id="createForm">
             <!-- Thông tin môn học -->
             <div class="section">
-                <h3>📚 Thong tin mon hoc</h3>
+                <h3>📚 Thông tin môn học</h3>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Ma mon hoc *</label>
+                        <label>Mã môn học *</label>
                         <input type="text" name="subject_code" placeholder="VD: IT009" required>
                     </div>
                     <div class="form-group">
-                        <label>So tin chi *</label>
+                        <label>Số tín chỉ *</label>
                         <input type="number" name="credits" min="1" max="10" value="4" required>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label>Ten mon hoc *</label>
-                    <input type="text" name="subject_name" placeholder="VD: Lap trinh thiet bi di dong" required>
+                    <label>Tên môn học *</label>
+                    <input type="text" name="subject_name" placeholder="VD: Lập trình thiết bị di động" required>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>So tiet ly thuyet</label>
+                        <label>Số tiết lý thuyết</label>
                         <input type="number" name="theory_hours" value="45" min="0">
                     </div>
                     <div class="form-group">
-                        <label>So tiet thuc hanh</label>
+                        <label>Số tiết thực hành</label>
                         <input type="number" name="practice_hours" value="30" min="0">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Mo ta</label>
-                    <textarea name="description" rows="3" placeholder="Mo ta ngan gon ve mon hoc..."></textarea>
+                    <label>Mô tả</label>
+                    <textarea name="description" rows="3" placeholder="Mô tả ngắn gọn về môn học..."></textarea>
                 </div>
             </div>
 
             <!-- Thông tin lớp học -->
             <div class="section">
-                <h3>🏫 Thong tin lop hoc</h3>
+                <h3>🏫 Thông tin lớp học</h3>
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Hoc ky *</label>
+                        <label>Học kỳ *</label>
                         <select name="semester" required>
-                            <option value="HK1">Hoc ky 1</option>
-                            <option value="HK2">Hoc ky 2</option>
-                            <option value="HK3">Hoc ky 3 (He)</option>
+                            <option value="HK1">Học kỳ 1</option>
+                            <option value="HK2">Học kỳ 2</option>
+                            <option value="HK3">Học kỳ 3 (Hè)</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Nam hoc *</label>
+                        <label>Năm học *</label>
                         <input type="text" name="academic_year" value="2024-2025" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>So lop can tao *</label>
+                        <label>Số lớp cần tạo *</label>
                         <input type="number" name="number_of_classes" min="1" max="10" value="5" required>
                     </div>
                     <div class="form-group">
-                        <label>Si so toi da/lop *</label>
+                        <label>Sĩ số tối đa/lớp *</label>
                         <input type="number" name="max_students" min="10" max="100" value="50" required>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Danh sach phong hoc (Tuy chon - phân cách bằng dấu phẩy)</label>
+                    <label>Danh sách phòng học (Tùy chọn - phân cách bằng dấu phẩy)</label>
                     <input type="text" name="rooms" placeholder="VD: A201, A202, A203, A204, A205">
-                    <small style="color: #666;">Neu de trong se tu dong gan phong</small>
+                    <small style="color: #666;">Nếu để trống sẽ tự động gán phòng</small>
                 </div>
             </div>
 
             <!-- Lịch học -->
             <div class="section">
-                <h3>📅 Lich hoc</h3>
+                <h3>📅 Lịch học</h3>
                 <div id="schedules">
                     <div class="schedule-item">
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Thu *</label>
+                                <label>Thứ *</label>
                                 <select name="schedules[0][day_of_week]" required>
-                                    <option value="2">Thu 2</option>
-                                    <option value="3">Thu 3</option>
-                                    <option value="4">Thu 4</option>
-                                    <option value="5">Thu 5</option>
-                                    <option value="6">Thu 6</option>
-                                    <option value="7">Thu 7</option>
-                                    <option value="8">Chu nhat</option>
+                                    <option value="2">Thứ 2</option>
+                                    <option value="3">Thứ 3</option>
+                                    <option value="4">Thứ 4</option>
+                                    <option value="5">Thứ 5</option>
+                                    <option value="6">Thứ 6</option>
+                                    <option value="7">Thứ 7</option>
+                                    <option value="8">Chủ nhật</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Gio bat dau *</label>
+                                <label>Giờ bắt đầu *</label>
                                 <input type="time" name="schedules[0][start_time]" value="07:00" required>
                             </div>
                             <div class="form-group">
-                                <label>Gio ket thuc *</label>
+                                <label>Giờ kết thúc *</label>
                                 <input type="time" name="schedules[0][end_time]" value="09:30" required>
                             </div>
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn-add" onclick="addSchedule()">+ Them buoi hoc</button>
+                <button type="button" class="btn-add" onclick="addSchedule()">+ Thêm buổi học</button>
             </div>
 
-            <button type="submit" class="btn-submit">Tao mon hoc va cac lop</button>
+            <button type="submit" class="btn-submit">Tạo môn học và các lớp</button>
         </form>
     </div>
 
@@ -227,20 +227,20 @@
                         <label>Thu *</label>
                         <select name="schedules[${scheduleCount}][day_of_week]" required>
                             <option value="2">Thu 2</option>
-                            <option value="3">Thu 3</option>
-                            <option value="4">Thu 4</option>
-                            <option value="5">Thu 5</option>
-                            <option value="6">Thu 6</option>
-                            <option value="7">Thu 7</option>
-                            <option value="8">Chu nhat</option>
+                            <option value="3">Thứ 3</option>
+                            <option value="4">Thứ 4</option>
+                            <option value="5">Thứ 5</option>
+                            <option value="6">Thứ 6</option>
+                            <option value="7">Thứ 7</option>
+                            <option value="8">Chủ nhật</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Gio bat dau *</label>
+                        <label>Giờ bắt đầu *</label>
                         <input type="time" name="schedules[${scheduleCount}][start_time]" value="07:00" required>
                     </div>
                     <div class="form-group">
-                        <label>Gio ket thuc *</label>
+                        <label>Giờ kết thúc *</label>
                         <input type="time" name="schedules[${scheduleCount}][end_time]" value="09:30" required>
                     </div>
                 </div>
