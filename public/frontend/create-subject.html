@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tao mon hoc moi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 { color: #333; margin-bottom: 30px; text-align: center; }
+        .section { margin-bottom: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px; }
+        .section h3 { color: #f5576c; margin-bottom: 15px; }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #333; font-weight: 500; }
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #f5576c;
+        }
+        .schedule-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #e1e8ed;
+        }
+        .btn-add {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-remove {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            float: right;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .btn-submit:hover { opacity: 0.9; }
+        .btn-back {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        .error { background: #fee; color: #c33; padding: 12px; border-radius: 8px; margin-bottom: 20px; display: none; }
+        .success { background: #efe; color: #3c3; padding: 12px; border-radius: 8px; margin-bottom: 20px; display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="training-dashboard.html" class="btn-back">← Quay lai</a>
+        
+        <h1>Tao mon hoc moi</h1>
+        
+        <div class="error" id="error"></div>
+        <div class="success" id="success"></div>
+
+        <form id="createForm">
+            <!-- Thông tin môn học -->
+            <div class="section">
+                <h3>📚 Thong tin mon hoc</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Ma mon hoc *</label>
+                        <input type="text" name="subject_code" placeholder="VD: IT009" required>
+                    </div>
+                    <div class="form-group">
+                        <label>So tin chi *</label>
+                        <input type="number" name="credits" min="1" max="10" value="4" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Ten mon hoc *</label>
+                    <input type="text" name="subject_name" placeholder="VD: Lap trinh thiet bi di dong" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>So tiet ly thuyet</label>
+                        <input type="number" name="theory_hours" value="45" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>So tiet thuc hanh</label>
+                        <input type="number" name="practice_hours" value="30" min="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Mo ta</label>
+                    <textarea name="description" rows="3" placeholder="Mo ta ngan gon ve mon hoc..."></textarea>
+                </div>
+            </div>
+
+            <!-- Thông tin lớp học -->
+            <div class="section">
+                <h3>🏫 Thong tin lop hoc</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Hoc ky *</label>
+                        <select name="semester" required>
+                            <option value="HK1">Hoc ky 1</option>
+                            <option value="HK2">Hoc ky 2</option>
+                            <option value="HK3">Hoc ky 3 (He)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nam hoc *</label>
+                        <input type="text" name="academic_year" value="2024-2025" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>So lop can tao *</label>
+                        <input type="number" name="number_of_classes" min="1" max="10" value="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Si so toi da/lop *</label>
+                        <input type="number" name="max_students" min="10" max="100" value="50" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Danh sach phong hoc (Tuy chon - phân cách bằng dấu phẩy)</label>
+                    <input type="text" name="rooms" placeholder="VD: A201, A202, A203, A204, A205">
+                    <small style="color: #666;">Neu de trong se tu dong gan phong</small>
+                </div>
+            </div>
+
+            <!-- Lịch học -->
+            <div class="section">
+                <h3>📅 Lich hoc</h3>
+                <div id="schedules">
+                    <div class="schedule-item">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Thu *</label>
+                                <select name="schedules[0][day_of_week]" required>
+                                    <option value="2">Thu 2</option>
+                                    <option value="3">Thu 3</option>
+                                    <option value="4">Thu 4</option>
+                                    <option value="5">Thu 5</option>
+                                    <option value="6">Thu 6</option>
+                                    <option value="7">Thu 7</option>
+                                    <option value="8">Chu nhat</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Gio bat dau *</label>
+                                <input type="time" name="schedules[0][start_time]" value="07:00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Gio ket thuc *</label>
+                                <input type="time" name="schedules[0][end_time]" value="09:30" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-add" onclick="addSchedule()">+ Them buoi hoc</button>
+            </div>
+
+            <button type="submit" class="btn-submit">Tao mon hoc va cac lop</button>
+        </form>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/api';
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            window.location.href = 'index.html';
+        }
+
+        let scheduleCount = 1;
+
+        function addSchedule() {
+            const schedulesDiv = document.getElementById('schedules');
+            const newSchedule = document.createElement('div');
+            newSchedule.className = 'schedule-item';
+            newSchedule.innerHTML = `
+                <button type="button" class="btn-remove" onclick="this.parentElement.remove()">Xoa</button>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Thu *</label>
+                        <select name="schedules[${scheduleCount}][day_of_week]" required>
+                            <option value="2">Thu 2</option>
+                            <option value="3">Thu 3</option>
+                            <option value="4">Thu 4</option>
+                            <option value="5">Thu 5</option>
+                            <option value="6">Thu 6</option>
+                            <option value="7">Thu 7</option>
+                            <option value="8">Chu nhat</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Gio bat dau *</label>
+                        <input type="time" name="schedules[${scheduleCount}][start_time]" value="07:00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Gio ket thuc *</label>
+                        <input type="time" name="schedules[${scheduleCount}][end_time]" value="09:30" required>
+                    </div>
+                </div>
+            `;
+            schedulesDiv.appendChild(newSchedule);
+            scheduleCount++;
+        }
+
+        document.getElementById('createForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = {
+                subject_code: formData.get('subject_code'),
+                subject_name: formData.get('subject_name'),
+                credits: parseInt(formData.get('credits')),
+                theory_hours: parseInt(formData.get('theory_hours')),
+                practice_hours: parseInt(formData.get('practice_hours')),
+                description: formData.get('description'),
+                semester: formData.get('semester'),
+                academic_year: formData.get('academic_year'),
+                number_of_classes: parseInt(formData.get('number_of_classes')),
+                max_students: parseInt(formData.get('max_students')),
+                schedules: [],
+                rooms: []
+            };
+
+            // Parse schedules
+            for (let i = 0; i < scheduleCount; i++) {
+                const day = formData.get(`schedules[${i}][day_of_week]`);
+                const start = formData.get(`schedules[${i}][start_time]`);
+                const end = formData.get(`schedules[${i}][end_time]`);
+                if (day && start && end) {
+                    data.schedules.push({
+                        day_of_week: parseInt(day),
+                        start_time: start,
+                        end_time: end
+                    });
+                }
+            }
+
+            // Parse rooms
+            const roomsInput = formData.get('rooms');
+            if (roomsInput) {
+                data.rooms = roomsInput.split(',').map(r => r.trim());
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/dao-tao/subjects`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('success').textContent = result.message;
+                    document.getElementById('success').style.display = 'block';
+                    setTimeout(() => {
+                        window.location.href = 'training-dashboard.html';
+                    }, 2000);
+                } else {
+                    document.getElementById('error').textContent = result.error || 'Co loi xay ra';
+                    document.getElementById('error').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('error').textContent = 'Loi ket noi API';
+                document.getElementById('error').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
